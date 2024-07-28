@@ -16,14 +16,12 @@ const hundreds = (num) => {
 
 const toReadable = (num) => {
     const exponents = ['thousand', 'million', 'billion'];
-    let sign = 1;
+    let sign = num < 0 ? 0 : 1;
 
-    let res = '', exponent = 0, tmp = num;
+    let res = '', exponent = 0, tmp = Math.abs(num);
 
-    if (num !== Math.abs(num)) {
-        sign = 0;
-        tmp = Math.abs(tmp)
-    }
+    if (!num) {return 'zero'}
+
     while (tmp) {
         if (exponent) {
             res = `${hundreds(tmp % 1000)} ${exponents[exponent-1]} ${res}`;
@@ -33,13 +31,10 @@ const toReadable = (num) => {
         tmp = Math.floor(tmp/1000); 
         ++exponent;
     }
-    if (!sign) {
-        return ('minus ' + res).trim()
-    } else if (res) {
-        return res.trim()
-    } else {
-        return 'zero'
-    }
+
+    return ((!sign) ? 'minus ' : '') + res.trim()
 }
+
+console.log(toReadable(510))
 // Экспорт функции для использования в других модулях
 module.exports = toReadable;
