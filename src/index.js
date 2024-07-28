@@ -1,30 +1,45 @@
-module.exports = function toReadable (number) {
-    const exponents = ['thousand', 'million', 'billion'];
-    const nums = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight','nine', 'ten', 'eleven', 'twelve', 'thirteen'];
-    const postfix = ['teen', 'ty', 'twenty', 'thirty'];
-    let firstNum = Math.floor(number/100), midNum = Math.floor(number/10) % 10, lastNum = number % 10;
-    let res = '', exponent = 0, tmp = number;
-
+const hundreds = (num) => {
+    const ones = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'] 
+    const teens = ['ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+    const tens = ['twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+    let firstNum = Math.floor(num/100), midNum = Math.floor(num/10) % 10, lastNum = num % 10, res = '';
+    
     if (firstNum) {
-        res = `${nums[firstNum]} hundred `
+        res = `${ones[firstNum]} hundred `
     }
-    if (number > (nums.length-1) && number < 20) {
-        if (nums[lastNum].endsWith('o') || nums[lastNum].endsWith('t') || nums[lastNum].endsWith('ve')) {
-            return res + nums[lastNum].slice(0,-1) + postfix[0];
-        } else {
-            return res + nums[lastNum] + postfix[0];
-        }
+    if ((num % 100) >= 10 && (num % 100) < 20) {
+        return res + teens[lastNum]
     } else {
-        return res + nums[number]
+        return res + (midNum ? `${tens[midNum-2]} ${ones[lastNum]}` : ones[lastNum])
     }
+}
 
+const toReadable = (num) => {
+    const exponents = ['thousand', 'million', 'billion'];
+    let sign = 1;
+
+    let res = '', exponent = 0, tmp = num;
+
+    if (num !== Math.abs(num)) {
+        sign = 0;
+        tmp = Math.abs(tmp)
+    }
     while (tmp) {
         if (exponent) {
-            
+            res = `${hundreds(tmp % 1000)} ${exponents[exponent-1]} ${res}`;
         } else {
-           
+            res = `${hundreds(tmp % 1000)} ${res}`;
         }
         tmp = Math.floor(tmp/1000); 
         ++exponent;
     }
+    if (!sign) {
+        return ('minus ' + res).trim()
+    } else if (res) {
+        return res.trim()
+    } else {
+        return 'zero'
+    }
 }
+// Экспорт функции для использования в других модулях
+module.exports = toReadable;
