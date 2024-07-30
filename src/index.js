@@ -35,6 +35,5 @@ const toReadable = (num) => {
     return ((!sign) ? 'minus ' : '') + res.trim()
 }
 
-console.log(toReadable(510))
 // Экспорт функции для использования в других модулях
 module.exports = toReadable;
